@@ -1,12 +1,11 @@
 import React from 'react';
-import { Layout, Menu, Avatar, Dropdown, Badge, Button, Space } from 'antd';
+import { Layout, Menu, Avatar, Dropdown, Button, Space } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboardIcon,
   BoxIcon, 
   ClipboardListIcon, 
   LogOutIcon, 
-  BellIcon, 
   UserIcon,
   BarChart2Icon 
 } from 'lucide-react';
@@ -25,10 +24,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
-  const { requests } = useAppSelector((state) => state.request);
+  // const { requests } = useAppSelector((state) => state.request);
   
-  // Count pending requests that need admin approval
-  const pendingRequests = requests.filter(req => req.status === 'pending').length;
+  // Đếm số yêu cầu đang chờ cần quản trị viên phê duyệt
+  // const pendingRequests = requests.filter(req => req.status === 'pending').length;
   
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -44,7 +43,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <div className="px-4 py-2 text-center">
               <Avatar size={64} icon={<UserIcon />} className="mb-2" />
               <div className="font-semibold">{user?.name}</div>
-              {/* <div className="text-sm text-gray-500">{user?.email}</div> */}
               <div className="mt-1 text-xs bg-blue-100 text-blue-800 py-1 px-2 rounded-full">Admin</div>
             </div>
           ),

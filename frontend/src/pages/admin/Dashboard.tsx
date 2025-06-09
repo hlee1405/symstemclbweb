@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { Typography, Row, Col, Statistic, Card, List, Empty, Spin, Badge, Button } from 'antd';
-import { BoxIcon, UserIcon, ClipboardListIcon, AlertTriangleIcon } from 'lucide-react';
+import { BoxIcon, UserIcon, AlertTriangleIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import AdminLayout from '../../components/Layout/AdminLayout';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { fetchEquipment } from '../../store/slices/equipmentSlice';
 import { fetchRequests } from '../../store/slices/requestSlice';
-import { RequestStatus, EquipmentStatus } from '../../types';
+import { RequestStatus } from '../../types';
 import StatusBadge from '../../components/common/StatusBadge';
 
 const { Title } = Typography;
@@ -23,7 +23,7 @@ const AdminDashboard: React.FC = () => {
     dispatch(fetchRequests());
   }, [dispatch]);
   
-  // Calculate statistics
+  // Tính toán thống kê
   const totalEquipment = equipment.length;
   
   const borrowedRequests = requests.filter(req => 
@@ -34,7 +34,7 @@ const AdminDashboard: React.FC = () => {
     req.status === RequestStatus.PENDING
   ).length;
   
-  // Find overdue items
+  // Tìm các mục quá hạn
   const allOverdueRequests = requests.filter(req => {
     if (req.status === RequestStatus.APPROVED) {
       return moment().isAfter(moment(req.returnDate));
@@ -47,7 +47,7 @@ const AdminDashboard: React.FC = () => {
   .sort((a, b) => moment(b.returnDate).valueOf() - moment(a.returnDate).valueOf())
   .slice(0, 4);
   
-  // Get recent requests (last 5)
+  // Nhận yêu cầu gần đây (5 yêu cầu gần đây nhất)
   const recentRequests = [...requests]
     .sort((a, b) => moment(b.requestDate).valueOf() - moment(a.requestDate).valueOf())
     .slice(0, 5);
@@ -115,7 +115,6 @@ const AdminDashboard: React.FC = () => {
               <Card 
                 title="Yêu cầu gần đây" 
                 extra={<Button type="link" onClick={() => navigate('/admin/requests')}>Xem tất cả</Button>}
-                // className="h-full"
                 bodyStyle={{ paddingTop: 5, paddingBottom: 5 }}
               >
                 {recentRequests.length === 0 ? (
@@ -150,7 +149,6 @@ const AdminDashboard: React.FC = () => {
                     <span>Thiết bị quá hạn</span>
                   </div>
                 } 
-                // className="h-full"
                 bodyStyle={{ paddingTop: 5, paddingBottom: 5 }}
               >
                 {overdueRequests.length === 0 ? (

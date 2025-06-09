@@ -7,7 +7,7 @@ import App from './App';
 import { store } from './store';
 import './index.css';
 
-// Ant Design theme customization
+// Tùy chỉnh chủ đề Ant Design
 const theme = {
   token: {
     colorPrimary: '#1890ff',

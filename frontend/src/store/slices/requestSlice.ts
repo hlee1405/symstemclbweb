@@ -62,7 +62,7 @@ export const {
   updateRequestStatus
 } = requestSlice.actions;
 
-// Async action to fetch all requests
+// Hành động không đồng bộ để lấy tất cả các yêu cầu
 export const fetchRequests = (): AppThunk => async (dispatch) => {
   try {
     dispatch(fetchRequestsStart());
@@ -73,7 +73,7 @@ export const fetchRequests = (): AppThunk => async (dispatch) => {
   }
 };
 
-// Async action to get request by ID
+// Hành động bất đồng bộ để nhận yêu cầu theo ID
 export const getRequestById = (id: string): AppThunk => async (dispatch) => {
   try {
     dispatch(fetchRequestsStart());
@@ -85,7 +85,7 @@ export const getRequestById = (id: string): AppThunk => async (dispatch) => {
   }
 };
 
-// Async action to create request
+// Hành động không đồng bộ để tạo yêu cầu
 export const createRequest = (requestData: Omit<BorrowRequest, 'id' | 'status' | 'requestDate'>): AppThunk => async (dispatch) => {
   try {
     dispatch(fetchRequestsStart());
@@ -96,18 +96,18 @@ export const createRequest = (requestData: Omit<BorrowRequest, 'id' | 'status' |
   }
 };
 
-// Async action to update request status
-export const updateRequestStatusById = (id: string, status: RequestStatus, notes?: string): AppThunk => async (dispatch) => {
+// Hành động không đồng bộ để cập nhật trạng thái yêu cầu
+export const updateRequestStatusById = (id: string, status: RequestStatus): AppThunk => async (dispatch) => {
   try {
     dispatch(fetchRequestsStart());
-    const request = await requestAPI.updateStatus(id, status, notes);
+    const request = await requestAPI.updateStatus(id, status);
     dispatch(updateRequestStatus(request));
   } catch (error) {
     dispatch(fetchRequestsFailure(error instanceof Error ? error.message : 'Đã xảy ra lỗi không xác định'));
   }
 };
 
-// Async action to delete request
+// Hành động không đồng bộ để xóa yêu cầu
 export const deleteRequest = (id: string): AppThunk => async (dispatch) => {
   try {
     dispatch(fetchRequestsStart());

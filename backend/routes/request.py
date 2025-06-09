@@ -40,7 +40,7 @@ async def update_status(id: str, status: str):
     if status not in valid_status:
         raise HTTPException(status_code=400, detail="Invalid status")
     
-    # Get the request first to check its current status and equipment details
+    # Nhận yêu cầu trước để kiểm tra trạng thái hiện tại và thông tin chi tiết về thiết bị
     request = await db.requests.find_one({"id": id})
     if not request:
         raise HTTPException(status_code=404, detail="Request not found")
@@ -59,9 +59,9 @@ async def update_status(id: str, status: str):
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Request not found")
     
-    # Update equipment quantity based on status change
+    # Cập nhật số lượng thiết bị dựa trên thay đổi trạng thái
     if status == "APPROVED" and request["status"] != "APPROVED":
-        # Decrease available quantity when request is approved
+        # Giảm số lượng có sẵn khi yêu cầu được chấp thuận
         new_quantity = equipment["availableQuantity"] - request["quantity"]
         # Tính trạng thái mới
         if new_quantity == 0:
@@ -73,7 +73,7 @@ async def update_status(id: str, status: str):
             {"$set": {"availableQuantity": new_quantity, "status": new_status}}
         )
     elif status == "RETURNED" and request["status"] != "RETURNED":
-        # Increase available quantity when equipment is returned
+        # Tăng số lượng có sẵn khi thiết bị được trả lại
         new_quantity = equipment["availableQuantity"] + request["quantity"]
         # Tính trạng thái mới
         if new_quantity == 0:

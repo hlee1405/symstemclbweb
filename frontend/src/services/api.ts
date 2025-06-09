@@ -9,7 +9,7 @@ const api = axios.create({
   },
 });
 
-// Add a request interceptor to add the auth token
+// Thêm một trình chặn yêu cầu để thêm mã thông báo xác thực
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -23,12 +23,12 @@ api.interceptors.request.use(
   }
 );
 
-// Add a response interceptor to handle token expiration
+// Thêm một bộ chặn phản hồi để xử lý hết hạn mã thông báo
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid
+      // Mã thông báo đã hết hạn hoặc không hợp lệ
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
@@ -37,7 +37,7 @@ api.interceptors.response.use(
   }
 );
 
-// Auth API
+// API xác thực
 export const authAPI = {
   login: async (username: string, password: string, isAdmin: boolean = false) => {
     const endpoint = isAdmin ? '/auth/admin/login' : '/auth/login';
@@ -49,7 +49,7 @@ export const authAPI = {
   },
 };
 
-// Equipment API
+// API thiết bị
 export const equipmentAPI = {
   getAll: async () => {
     const response = await api.get('/equipment/');
@@ -73,7 +73,7 @@ export const equipmentAPI = {
   },
 };
 
-// Request API
+// Yêu cầu API
 export const requestAPI = {
   getAll: async () => {
     const response = await api.get('/request/');
@@ -97,7 +97,7 @@ export const requestAPI = {
   },
 };
 
-// Notification Read API
+// API Đọc Thông báo
 export const notificationReadAPI = {
   getRead: async (userId: string) => {
     const res = await api.get(`/notification-read/${userId}`);

@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { fetchRequests } from '../../store/slices/requestSlice';
 import { fetchEquipment } from '../../store/slices/equipmentSlice';
 import { RequestStatus } from '../../types';
+import dayjs, { Dayjs } from 'dayjs';
 import moment from 'moment';
 
 const { Title, Text } = Typography;
@@ -17,9 +18,9 @@ const AdminStatistics: React.FC = () => {
   const dispatch = useAppDispatch();
   const { requests, loading: requestsLoading } = useAppSelector(state => state.request);
   const { items: equipment, loading: equipmentLoading } = useAppSelector(state => state.equipment);
-  const [dateRange, setDateRange] = useState<[moment.Moment, moment.Moment]>([
-    moment().subtract(30, 'days'),
-    moment()
+  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
+    dayjs().subtract(30, 'day'),
+    dayjs()
   ]);
   const [chartType, setChartType] = useState<ChartType>('bar');
   
@@ -30,24 +31,24 @@ const AdminStatistics: React.FC = () => {
   
   const loading = requestsLoading || equipmentLoading;
   
-  // Generate statistics based on requests and date range
+  // Tạo số liệu thống kê dựa trên yêu cầu và phạm vi ngày
   const generateEquipmentStats = () => {
-    // Filter requests by date range and status (only count borrowed and returned)
+    // Lọc yêu cầu theo phạm vi ngày và trạng thái (chỉ tính số đã mượn và trả lại)
     const filteredRequests = requests.filter(req => {
       const requestDate = moment(req.requestDate);
-      return (req.status === RequestStatus.BORROWED || req.status === RequestStatus.RETURNED) &&
-             requestDate.isAfter(dateRange[0]) &&
-             requestDate.isBefore(dateRange[1]);
+      return (req.status === RequestStatus.APPROVED || req.status === RequestStatus.RETURNED) &&
+             requestDate.isAfter(moment(dateRange[0].toDate())) &&
+             requestDate.isBefore(moment(dateRange[1].toDate()));
     });
     
-    // Count requests by equipment
+    // Đếm yêu cầu theo thiết bị
     const equipmentCounts = new Map<string, number>();
     filteredRequests.forEach(req => {
       const count = equipmentCounts.get(req.equipmentId) || 0;
       equipmentCounts.set(req.equipmentId, count + req.quantity);
     });
     
-    // Convert to chart data
+    // Chuyển đổi sang dữ liệu biểu đồ
     const chartData = Array.from(equipmentCounts.entries())
       .map(([equipmentId, count]) => {
         const equipmentItem = equipment.find(e => e.id === equipmentId);
@@ -57,22 +58,22 @@ const AdminStatistics: React.FC = () => {
         };
       })
       .sort((a, b) => b.count - a.count)
-      .slice(0, 10); // Top 10 most borrowed
+      .slice(0, 10); // Top 10 được vay nhiều nhất
     
     return chartData;
   };
   
-  // Generate statistics by category
+  // Tạo số liệu thống kê theo danh mục
   const generateCategoryStats = () => {
-    // Filter requests by date range and status
+    // Lọc yêu cầu theo phạm vi ngày và trạng thái
     const filteredRequests = requests.filter(req => {
       const requestDate = moment(req.requestDate);
       return (req.status === RequestStatus.APPROVED || req.status === RequestStatus.RETURNED) &&
-             requestDate.isAfter(dateRange[0]) &&
-             requestDate.isBefore(dateRange[1]);
+             requestDate.isAfter(moment(dateRange[0].toDate())) &&
+             requestDate.isBefore(moment(dateRange[1].toDate()));
     });
     
-    // Get category for each equipment
+    // Nhận danh mục cho từng thiết bị
     const categoryCounts = new Map<string, number>();
     
     filteredRequests.forEach(req => {
@@ -84,7 +85,7 @@ const AdminStatistics: React.FC = () => {
       }
     });
     
-    // Convert to chart data
+    // Chuyển đổi sang dữ liệu biểu đồ
     const chartData = Array.from(categoryCounts.entries())
       .map(([category, count]) => ({
         name: category,
@@ -95,23 +96,23 @@ const AdminStatistics: React.FC = () => {
     return chartData;
   };
   
-  // Current month statistics
+  // Thống kê tháng hiện tại
   const generateMonthlyStats = () => {
-    const currentMonth = moment().format('MMMM YYYY');
+    const currentMonth = dayjs().format('MMMM YYYY');
     
-    // Filter requests for current month
+    // Lọc yêu cầu cho tháng hiện tại
     const currentMonthRequests = requests.filter(req => {
-      return moment(req.requestDate).format('MMMM YYYY') === currentMonth &&
+      return dayjs(req.requestDate).format('MMMM YYYY') === currentMonth &&
              (req.status === RequestStatus.APPROVED || req.status === RequestStatus.RETURNED);
     });
     
-    // Total equipment borrowed this month
+    // Tổng số thiết bị mượn trong tháng này
     const totalBorrowed = currentMonthRequests.reduce((sum, req) => sum + req.quantity, 0);
     
-    // Count unique users
+    // Đếm số người dùng duy nhất
     const uniqueUsers = new Set(currentMonthRequests.map(req => req.userId)).size;
     
-    // Most borrowed equipment
+    // Thiết bị được mượn nhiều nhất
     const equipmentCounts = new Map<string, number>();
     currentMonthRequests.forEach(req => {
       const count = equipmentCounts.get(req.equipmentId) || 0;
@@ -140,7 +141,7 @@ const AdminStatistics: React.FC = () => {
   const categoryStats = generateCategoryStats();
   const monthlyStats = generateMonthlyStats();
   
-  // Colors for charts
+  // Màu sắc cho biểu đồ
   const COLORS = ['#1890ff', '#52c41a', '#faad14', '#f5222d', '#722ed1', '#13c2c2', '#eb2f96', '#fa8c16', '#a0d911', '#52c41a'];
   
   return (
@@ -158,7 +159,7 @@ const AdminStatistics: React.FC = () => {
             <Text strong>Khoảng thời gian:</Text>
             <RangePicker 
               value={dateRange}
-              onChange={(dates) => dates && setDateRange(dates as [moment.Moment, moment.Moment])}
+              onChange={(dates) => dates && setDateRange(dates as [Dayjs, Dayjs])}
               className="mb-4 md:mb-0"
             />
             <Radio.Group 
@@ -239,12 +240,12 @@ const AdminStatistics: React.FC = () => {
                         fill="#8884d8"
                         dataKey="count"
                       >
-                        {equipmentStats.map((entry, index) => (
+                        {equipmentStats.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
                       <Tooltip 
-                        formatter={(value, name, props) => [value, 'Số lần mượn']}
+                        formatter={(value) => [value, 'Số lần mượn']}
                         labelFormatter={(label) => equipmentStats.find(item => item.count === label)?.name || ''}
                       />
                       <Legend />
@@ -287,12 +288,12 @@ const AdminStatistics: React.FC = () => {
                         fill="#8884d8"
                         dataKey="count"
                       >
-                        {categoryStats.map((entry, index) => (
+                        {categoryStats.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
                       <Tooltip 
-                        formatter={(value, name, props) => [value, 'Số lần mượn']}
+                        formatter={(value) => [value, 'Số lần mượn']}
                         labelFormatter={(label) => categoryStats.find(item => item.count === label)?.name || ''}
                       />
                       <Legend />

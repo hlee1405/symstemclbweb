@@ -35,14 +35,14 @@ const alertSlice = createSlice({
 
 export const { addAlert, removeAlert } = alertSlice.actions;
 
-// Helper to create and auto-remove alerts
+// Trợ giúp tạo và tự động xóa cảnh báo
 export const setAlert = (
   message: string, 
   type: 'success' | 'error' | 'info' | 'warning' = 'info', 
   timeout = 5000
 ): AppThunk => (dispatch) => {
   const id = uuidv4();
-  dispatch(addAlert({ message, type, id }));
+  dispatch(addAlert({ message, type }));
   
   setTimeout(() => {
     dispatch(removeAlert(id));

@@ -72,30 +72,30 @@ const AdminRequestList: React.FC = () => {
     });
   };
   
-  // Filter requests based on tab, search, and filters
+  // Lọc yêu cầu dựa trên tab, tìm kiếm và bộ lọc
   const filterRequests = (requests: BorrowRequest[], status: RequestStatus[]) => {
     return requests
       .filter(req => {
-        // Filter by status
+        // Lọc theo trạng thái
         const matchesStatus = status.includes(req.status);
         
-        // Filter by search query
+        // Lọc theo truy vấn tìm kiếm
         const matchesSearch = 
           req.equipmentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
           req.userName.toLowerCase().includes(searchQuery.toLowerCase());
         
-        // Filter by student
+        // Lọc theo học sinh
         const matchesStudent = studentFilter ? req.userName === studentFilter : true;
         
         return matchesStatus && matchesSearch && matchesStudent;
       })
-      .sort((a, b) => moment(b.requestDate).valueOf() - moment(a.requestDate).valueOf()); // Sort by request date descending
+      .sort((a, b) => moment(b.requestDate).valueOf() - moment(a.requestDate).valueOf()); // Sắp xếp theo ngày yêu cầu giảm dần
   };
   
-  // Get unique student names for filtering
+  // Lấy tên học sinh duy nhất để lọc
   const studentNames = Array.from(new Set(requests.map(req => req.userName)));
   
-  // Filtered request lists
+  // Danh sách yêu cầu đã lọc
   const pendingRequests = filterRequests(requests, [RequestStatus.PENDING]);
   const approvedRequests = filterRequests(requests, [RequestStatus.APPROVED]);
   const rejectedRequests = filterRequests(requests, [RequestStatus.REJECTED, RequestStatus.CANCELED]);

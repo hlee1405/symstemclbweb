@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Descriptions, Button, Card, Space, Steps, Tag, Input, Modal, Spin, Alert } from 'antd';
-import { ArrowLeftIcon, CheckCircleIcon, XCircleIcon, AlertTriangleIcon, MessageCircleIcon } from 'lucide-react';
+import { Typography, Descriptions, Button, Card, Space, Steps, Input, Modal, Spin, Alert } from 'antd';
+import { ArrowLeftIcon, CheckCircleIcon, XCircleIcon, AlertTriangleIcon } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
-import moment from 'moment';
 import AdminLayout from '../../components/Layout/AdminLayout';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { getRequestById, updateRequestStatusById } from '../../store/slices/requestSlice';
@@ -39,10 +38,10 @@ const AdminRequestDetail: React.FC = () => {
   
   const loading = requestLoading || equipmentLoading;
   
-  // Check if request is overdue
+  // Kiểm tra xem yêu cầu có quá hạn không
   const isOverdue = selectedRequest && selectedRequest.status === RequestStatus.OVERDUE;
   
-  // Determine current step in the process
+  // Xác định bước hiện tại trong quy trình
   const getCurrentStep = () => {
     if (!selectedRequest) return 0;
     
@@ -54,7 +53,7 @@ const AdminRequestDetail: React.FC = () => {
       case RequestStatus.RETURNED:
         return 3;
       case RequestStatus.REJECTED:
-        return -1; // Special case for rejected
+        return -1; // Trường hợp đặc biệt cho bị từ chối
       default:
         return 0;
     }

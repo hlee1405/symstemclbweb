@@ -8,7 +8,7 @@ import StatusBadge from '../../components/common/StatusBadge';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { getEquipmentById } from '../../store/slices/equipmentSlice';
 import { fetchRequests } from '../../store/slices/requestSlice';
-import { RequestStatus } from '../../types';
+// import { RequestStatus } from '../../types';
 
 const { Title, Text } = Typography;
 
@@ -26,10 +26,10 @@ const AdminEquipmentDetail: React.FC = () => {
     }
   }, [dispatch, id]);
   
-  // Get all requests for this equipment
+  // Nhận tất cả các yêu cầu cho thiết bị này
   const equipmentRequests = requests.filter(req => req.equipmentId === id);
   
-  // Default image if none provided
+  // Hình ảnh mặc định nếu không có sẵn
   const defaultImage = 'https://images.pexels.com/photos/2720447/pexels-photo-2720447.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1';
   
   const handleEdit = () => {
@@ -92,14 +92,14 @@ const AdminEquipmentDetail: React.FC = () => {
     {
       title: 'Trạng thái',
       key: 'status',
-      render: (text: string, record: any) => (
+      render: (_: any, record: any) => (
         <StatusBadge status={record.status} type="request" />
       ),
     },
     {
       title: 'Thao tác',
       key: 'actions',
-      render: (text: string, record: any) => (
+      render: (_: any, record: any) => (
         <Button 
           type="link"
           onClick={() => navigate(`/admin/requests/${record.id}`)}

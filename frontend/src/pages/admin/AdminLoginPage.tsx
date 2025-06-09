@@ -10,7 +10,7 @@ const AdminLoginPage: React.FC = () => {
   const [form] = Form.useForm();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const dispatch = useAppDispatch();
-  const { loading, error, user } = useAppSelector((state) => state.auth);
+  const { loading, error } = useAppSelector((state) => state.auth);
 
   const onFinish = async (values: { username: string; password: string }) => {
     await dispatch(loginAdmin(values.username, values.password));

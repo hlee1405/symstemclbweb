@@ -31,8 +31,7 @@ const StudentLayout: React.FC<StudentLayoutProps> = ({ children }) => {
   const { requests } = useAppSelector((state) => state.request);
   const readIds = useAppSelector((state) => state.notificationRead.readIds);
   
-  // Quản lý danh sách đã đọc ở đây
-  const [readNotifications, setReadNotifications] = useState<Set<string>>(new Set());
+  // Quản lý số lượng thông báo chưa đọc
   const [unreadCount, setUnreadCount] = useState(0);
 
   // Tính toán danh sách thông báo cần thiết
@@ -65,10 +64,6 @@ const StudentLayout: React.FC<StudentLayoutProps> = ({ children }) => {
   }, [user?.id, dispatch]);
 
   // Callback cho NotificationList để cập nhật trạng thái đã đọc
-  const handleReadChange = (readSet: Set<string>) => {
-    setReadNotifications(new Set(readSet));
-  };
-  
   const handleLogout = () => {
     dispatch(logoutUser());
     navigate('/login');
@@ -83,7 +78,6 @@ const StudentLayout: React.FC<StudentLayoutProps> = ({ children }) => {
             <div className="px-4 py-2 text-center">
               <Avatar size={64} icon={<UserIcon />} className="mb-2" />
               <div className="font-semibold">{user?.name}</div>
-              {/* <div className="text-sm text-gray-500">{user?.email}</div> */}
               <div className="mt-1 text-xs bg-blue-100 text-blue-800 py-1 px-2 rounded-full">Student</div>
             </div>
           ),

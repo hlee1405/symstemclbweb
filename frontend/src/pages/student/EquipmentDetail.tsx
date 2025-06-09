@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Typography, Descriptions, Image, Card, Divider, Badge, Button, Space, Spin, Alert } from 'antd';
 import { ArrowLeftIcon } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
-// import moment from 'moment';
 import StudentLayout from '../../components/Layout/StudentLayout';
 import BorrowForm from '../../components/equipment/BorrowForm';
 import StatusBadge from '../../components/common/StatusBadge';
@@ -32,12 +31,12 @@ const EquipmentDetail: React.FC = () => {
     }
   }, [dispatch, id, user?.id]);
   
-  // Check if user has already requested this equipment and it's pending
+  // Kiểm tra xem người dùng đã yêu cầu thiết bị này chưa và nó đang chờ xử lý
   const hasPendingRequest = requests.some(
     req => req.equipmentId === id && req.status === RequestStatus.PENDING
   );
   
-  // Default image if none provided
+  // Hình ảnh mặc định nếu không có sẵn
   const defaultImage = 'https://images.pexels.com/photos/2720447/pexels-photo-2720447.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1';
   
   const handleBorrowClick = () => {
@@ -45,7 +44,7 @@ const EquipmentDetail: React.FC = () => {
   };
   
   const handleBorrowSuccess = () => {
-    // Refresh user requests and hide form
+    // Làm mới yêu cầu của người dùng và ẩn biểu mẫu
     if (user?.id) {
       dispatch(fetchRequests());
     }

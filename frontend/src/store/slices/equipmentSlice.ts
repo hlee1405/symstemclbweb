@@ -74,7 +74,7 @@ export const {
   updateQuantity
 } = equipmentSlice.actions;
 
-// Async action to fetch equipment
+// Hành động không đồng bộ để lấy thiết bị
 export const fetchEquipment = (): AppThunk => async (dispatch) => {
   try {
     dispatch(fetchEquipmentStart());
@@ -85,7 +85,7 @@ export const fetchEquipment = (): AppThunk => async (dispatch) => {
   }
 };
 
-// Async action to get equipment by ID
+// Hành động không đồng bộ để lấy thiết bị theo ID
 export const getEquipmentById = (id: string): AppThunk => async (dispatch) => {
   try {
     dispatch(fetchEquipmentStart());
@@ -96,7 +96,7 @@ export const getEquipmentById = (id: string): AppThunk => async (dispatch) => {
   }
 };
 
-// Async action to create equipment
+// Hành động không đồng bộ để tạo thiết bị
 export const createEquipment = (equipmentData: Omit<Equipment, 'id' | 'createdAt'>): AppThunk => async (dispatch) => {
   try {
     dispatch(fetchEquipmentStart());
@@ -105,13 +105,13 @@ export const createEquipment = (equipmentData: Omit<Equipment, 'id' | 'createdAt
       createdAt: new Date().toISOString()
     });
     dispatch(addEquipment(equipment));
-    dispatch(fetchEquipment()); // Refresh the equipment list
+    dispatch(fetchEquipment()); // Làm mới danh sách thiết bị
   } catch (error) {
     dispatch(fetchEquipmentFailure(error instanceof Error ? error.message : 'Đã xảy ra lỗi không xác định'));
   }
 };
 
-// Async action to update equipment
+// Hành động không đồng bộ để cập nhật thiết bị
 export const updateEquipmentById = (id: string, equipmentData: Omit<Equipment, 'id'>): AppThunk => async (dispatch) => {
   try {
     dispatch(fetchEquipmentStart());
@@ -123,7 +123,7 @@ export const updateEquipmentById = (id: string, equipmentData: Omit<Equipment, '
   }
 };
 
-// Async action to delete equipment
+// Hành động không đồng bộ để xóa thiết bị
 export const deleteEquipmentById = (id: string): AppThunk => async (dispatch) => {
   try {
     dispatch(fetchEquipmentStart());

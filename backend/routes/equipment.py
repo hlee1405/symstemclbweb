@@ -10,14 +10,14 @@ router = APIRouter()
 async def add_equipment(equipment: EquipmentIn):
     doc = equipment.dict()
     doc["id"] = str(uuid.uuid4())  # Sinh id dạng chuỗi duy nhất
-    doc["createdAt"] = datetime.utcnow().isoformat()  # Add creation timestamp
+    doc["createdAt"] = datetime.utcnow().isoformat()  # Thêm dấu thời gian tạo
     await db.equipment.insert_one(doc)
     return EquipmentOut(**doc)
 
 @router.get("/", response_model=list[EquipmentOut])
 async def list_equipment():
     equipments = []
-    async for eq in db.equipment.find().sort("createdAt", -1):  # Sort by createdAt in descending order
+    async for eq in db.equipment.find().sort("createdAt", -1):  # Sắp xếp theo createdAt theo thứ tự giảm dần
         eq["id"] = str(eq.get("id", ""))
         eq.pop("_id", None)
         equipments.append(EquipmentOut(**eq))

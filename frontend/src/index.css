@@ -28,12 +28,12 @@ html, body {
   box-sizing: border-box;
 }
 
-/* Add smooth transitions for hover effects */
+/* Thêm hiệu ứng chuyển tiếp mượt mà cho hiệu ứng di chuột */
 .hover-transition {
   transition: all 0.3s ease;
 }
 
-/* Card hover animation */
+/* Hoạt ảnh di chuột qua thẻ */
 .equipment-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -43,7 +43,7 @@ html, body {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Custom scrollbar */
+/* Thanh cuộn tùy chỉnh */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -63,7 +63,7 @@ html, body {
   background: #a1a1a1;
 }
 
-/* Badge status colors */
+/* Màu trạng thái huy hiệu */
 .status-available {
   background-color: var(--success-color);
 }
@@ -76,7 +76,7 @@ html, body {
   background-color: var(--error-color);
 }
 
-/* Loading animation */
+/* Đang tải hoạt ảnh */
 .loading-spinner {
   animation: spin 1s linear infinite;
 }
@@ -86,7 +86,7 @@ html, body {
   100% { transform: rotate(360deg); }
 }
 
-/* Page transitions */
+/* Chuyển trang */
 .page-enter {
   opacity: 0;
   transform: translateY(10px);

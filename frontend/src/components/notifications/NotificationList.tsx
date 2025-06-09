@@ -25,10 +25,10 @@ const NotificationList: React.FC<NotificationListProps> = ({ requests, readNotif
       const isOverdue = moment().isAfter(moment(req.returnDate));
       const result = [];
       if (isNewlyApproved) {
-        result.push({ ...req, notificationType: 'approval' });
+        result.push({ ...req, notificationType: 'approval' as const });
       }
       if (isNearDue || isOverdue) {
-        result.push({ ...req, notificationType: 'return' });
+        result.push({ ...req, notificationType: 'return' as const });
       }
       return result;
     }

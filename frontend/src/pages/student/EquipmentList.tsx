@@ -21,10 +21,10 @@ const EquipmentList: React.FC = () => {
     dispatch(fetchEquipment());
   }, [dispatch]);
   
-  // Extract unique categories from equipment
+  // Trích xuất các danh mục duy nhất từ ​​thiết bị
   const categories = Array.from(new Set(items.map(item => item.category)));
   
-  // Filter equipment based on search and filters
+  // Thiết bị lọc dựa trên tìm kiếm và bộ lọc
   const filteredEquipment = items.filter((item: Equipment) => {
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           item.description.toLowerCase().includes(searchQuery.toLowerCase());

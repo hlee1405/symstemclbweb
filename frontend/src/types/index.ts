@@ -23,7 +23,7 @@ export interface Equipment {
   imageUrl?: string;
   status: EquipmentStatus;
   condition: string;
-  createdAt: string; // ISO date string
+  createdAt: string; 
 }
 
 export enum EquipmentStatus {

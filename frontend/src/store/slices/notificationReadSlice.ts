@@ -37,7 +37,7 @@ export const {
   fetchReadStart, fetchReadSuccess, fetchReadFailure, markReadLocal
 } = notificationReadSlice.actions;
 
-// Async actions
+// Hành động không đồng bộ
 export const fetchReadNotifications = (userId: string): AppThunk => async (dispatch) => {
   try {
     dispatch(fetchReadStart());

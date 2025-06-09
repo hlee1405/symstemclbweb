@@ -28,7 +28,7 @@ const BorrowHistory: React.FC = () => {
     }
   };
   
-  // Filter requests based on tab
+  // Lọc yêu cầu dựa trên tab
   const pendingRequests = requests.filter(
     req => req.status === RequestStatus.PENDING
   );
@@ -45,9 +45,9 @@ const BorrowHistory: React.FC = () => {
     req => req.status === RequestStatus.REJECTED || req.status === RequestStatus.CANCELED
   );
   
-  const handleMarkReturned = async (id: string) => {
+  const handleMarkReturned = async (_id: string) => {
     if (user?.id) {
-      dispatch(fetchUserRequests(user.id));
+      dispatch(fetchRequests());
     }
   };
   

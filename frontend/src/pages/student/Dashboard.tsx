@@ -15,7 +15,7 @@ const { Title } = Typography;
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { items: equipment, loading: equipmentLoading } = useAppSelector(state => state.equipment);
+  const { loading: equipmentLoading } = useAppSelector(state => state.equipment);
   const { requests, loading: requestsLoading } = useAppSelector(state => state.request);
   const { user } = useAppSelector(state => state.auth);
   
@@ -26,7 +26,7 @@ const Dashboard: React.FC = () => {
     }
   }, [dispatch, user?.id]);
   
-  // Calculate statistics
+  // Tính toán thống kê
   const approvedRequests = requests.filter(req => 
     req.status === RequestStatus.APPROVED
   ).length;
@@ -48,7 +48,7 @@ const Dashboard: React.FC = () => {
     .sort((a, b) => moment(b.returnDate).valueOf() - moment(a.returnDate).valueOf())
     .slice(0, 4);
   
-  // Get recent requests (last 5)
+  // Nhận yêu cầu gần đây (5 yêu cầu gần đây nhất)
   const recentRequests = [...requests]
     .sort((a, b) => moment(b.requestDate).valueOf() - moment(a.requestDate).valueOf())
     .slice(0, 5);

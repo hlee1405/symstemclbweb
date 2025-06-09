@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Button, Table, Space, Input, Modal, Form, InputNumber, Select, Badge } from 'antd';
+import { Typography, Button, Table, Space, Input, Modal, Form, InputNumber, Select } from 'antd';
 import { PlusIcon, Search, EditIcon, Trash2Icon } from 'lucide-react';
 import AdminLayout from '../../components/Layout/AdminLayout';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { fetchEquipment, addEquipment, updateEquipmentById, deleteEquipmentById, createEquipment } from '../../store/slices/equipmentSlice';
+import { fetchEquipment, updateEquipmentById, deleteEquipmentById, createEquipment } from '../../store/slices/equipmentSlice';
 import { Equipment, EquipmentStatus } from '../../types';
 import StatusBadge from '../../components/common/StatusBadge';
 import { setAlert } from '../../store/slices/alertSlice';
 import moment from 'moment';
-import { TableProps } from 'antd';
-import viVN from 'antd/es/locale/vi_VN';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -50,7 +48,7 @@ const AdminEquipmentList: React.FC = () => {
       setConfirmLoading(true);
       const values = await form.validateFields();
       
-      // Set equipment status based on available quantity
+      // Thiết lập trạng thái thiết bị dựa trên số lượng có sẵn
       let status = EquipmentStatus.AVAILABLE;
       if (values.availableQuantity === 0) {
         status = EquipmentStatus.OUT_OF_STOCK;
@@ -89,7 +87,7 @@ const AdminEquipmentList: React.FC = () => {
     });
   };
   
-  // Filter equipment based on search
+  // Thiết bị lọc dựa trên tìm kiếm
   const filteredEquipment = items
     .filter((item: Equipment) => {
       return item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -114,7 +112,7 @@ const AdminEquipmentList: React.FC = () => {
     {
       title: 'Số lượng',
       key: 'quantity',
-      render: (text: string, record: Equipment) => (
+      render: (_: string, record: Equipment) => (
         <span>{record.availableQuantity} / {record.totalQuantity}</span>
       ),
       sorter: (a: Equipment, b: Equipment) => a.availableQuantity - b.availableQuantity,
@@ -122,7 +120,7 @@ const AdminEquipmentList: React.FC = () => {
     {
       title: 'Trạng thái',
       key: 'status',
-      render: (text: string, record: Equipment) => (
+      render: (_: string, record: Equipment) => (
         <StatusBadge status={record.status} type="equipment" />
       ),
       sorter: (a: Equipment, b: Equipment) => a.status.localeCompare(b.status),
@@ -130,7 +128,7 @@ const AdminEquipmentList: React.FC = () => {
     {
       title: 'Thao tác',
       key: 'actions',
-      render: (text: string, record: Equipment) => (
+      render: (_: string, record: Equipment) => (
         <Space>
           <Button
             type="primary"

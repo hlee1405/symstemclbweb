@@ -23,7 +23,7 @@ const initialState: AuthState = {
   error: null,
 };
 
-// Check if user is logged in from localStorage
+// Kiểm tra xem người dùng có đăng nhập từ localStorage không
 const token = localStorage.getItem('token');
 const storedUser = localStorage.getItem('user');
 if (token && storedUser) {
@@ -106,7 +106,7 @@ export const loginStudent = (username: string, password: string): AppThunk => as
   }
 };
 
-// Logout and remove from localStorage
+// Đăng xuất và xóa khỏi localStorage
 export const logoutUser = (): AppThunk => (dispatch) => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Space, Button, Typography, Descriptions } from 'antd';
-import { CalendarIcon, CheckCircleIcon, XCircleIcon, ArrowRightCircleIcon } from 'lucide-react';
+import { CheckCircleIcon, XCircleIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import { BorrowRequest, RequestStatus } from '../../types';
@@ -22,8 +22,6 @@ const RequestCard: React.FC<RequestCardProps> = ({
   isAdmin = false,
   onApprove,
   onReject,
-  onMarkBorrowed,
-  onMarkReturned
 }) => {
   const navigate = useNavigate();
   
@@ -33,7 +31,7 @@ const RequestCard: React.FC<RequestCardProps> = ({
     }
   };
   
-  // Check if request is overdue
+  // Kiểm tra xem yêu cầu có quá hạn không
   const isOverdue = () => {
     if (request.status === RequestStatus.APPROVED) {
       const today = moment();
@@ -43,7 +41,7 @@ const RequestCard: React.FC<RequestCardProps> = ({
     return false;
   };
   
-  // Render status badge with overdue check
+  // Biểu tượng trạng thái hiển thị với kiểm tra quá hạn
   const renderStatus = () => {
     if (isOverdue()) {
       return <StatusBadge status={RequestStatus.OVERDUE} type="request" />;
@@ -61,9 +59,11 @@ const RequestCard: React.FC<RequestCardProps> = ({
         </Space>
       }
       extra={
-        <Button type="link" onClick={handleViewDetails}>
-          Xem chi tiết
-        </Button>
+        isAdmin && (
+          <Button type="link" onClick={handleViewDetails}>
+            Xem chi tiết
+          </Button>
+        )
       }
     >
       <Descriptions column={2} size="small">
@@ -103,16 +103,6 @@ const RequestCard: React.FC<RequestCardProps> = ({
             </>
           )}
           
-          {/* {request.status === RequestStatus.APPROVED && (
-            <Button 
-              type="primary" 
-              icon={<CheckCircleIcon size={16} />} 
-              onClick={() => onMarkReturned?.(request.id)}
-              className={isOverdue() ? 'bg-red-500 hover:bg-red-600 border-red-500' : ''}
-            >
-              Đánh dấu đã trả
-            </Button>
-          )} */}
         </div>
       )}
     </Card>
