@@ -47,6 +47,7 @@ export interface BorrowRequest {
   approvedDate?: string;
   status: RequestStatus;
   notes?: string;
+  notificationType?: 'approval' | 'return';
 }
 
 export enum RequestStatus {

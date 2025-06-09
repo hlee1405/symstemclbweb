@@ -36,14 +36,21 @@ const StudentLayout: React.FC<StudentLayoutProps> = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
 
   // Tính toán danh sách thông báo cần thiết
-  const notifications = requests.filter(req => {
+  const notifications = requests.flatMap(req => {
     if (req.status === RequestStatus.APPROVED) {
       const isNewlyApproved = moment().diff(moment(req.approvedDate), 'hours') < 24;
       const isNearDue = moment(req.returnDate).diff(moment(), 'days') === 1;
       const isOverdue = moment().isAfter(moment(req.returnDate));
-      return isNewlyApproved || isNearDue || isOverdue;
+      const result = [];
+      if (isNewlyApproved) {
+        result.push({ ...req, notificationType: 'approval' });
+      }
+      if (isNearDue || isOverdue) {
+        result.push({ ...req, notificationType: 'return' });
+      }
+      return result;
     }
-    return false;
+    return [];
   });
 
   // Cập nhật số lượng chưa đọc mỗi khi notifications hoặc readNotifications thay đổi

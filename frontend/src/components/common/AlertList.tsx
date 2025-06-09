@@ -5,7 +5,7 @@ import { useAppSelector } from '../../hooks/redux';
 const AlertList: React.FC = () => {
   const { alerts } = useAppSelector((state) => state.alert);
   
-  // Optional: scroll to top when a new alert appears
+  // Cuộn lên đầu trang khi có cảnh báo mới xuất hiện
   useEffect(() => {
     if (alerts.length > 0) {
       window.scrollTo({ top: 0, behavior: 'smooth' });

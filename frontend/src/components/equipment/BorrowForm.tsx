@@ -45,20 +45,20 @@ const BorrowForm: React.FC<BorrowFormProps> = ({ equipment, onSuccess }) => {
     )
     .reduce((sum, req) => sum + (req.quantity || 0), 0);
 
-  // Kiểm tra giới hạn trước khi gửi
-  const checkLimits = (quantity: number) => {
-    // Kiểm tra tổng số lượng cùng loại
-    if (totalSameDeviceBorrowed + quantity > 2) {
-      dispatch(setAlert('Bạn chỉ được mượn tối đa 2 thiết bị cùng loại (bao gồm cả đang chờ duyệt và đã duyệt).', 'error'));
-      return false;
-    }
-    // Kiểm tra tổng số lượng tất cả thiết bị
-    if (totalAllDeviceBorrowed + quantity > 3) {
-      dispatch(setAlert('Bạn chỉ được mượn tối đa 3 thiết bị (bao gồm cả đang chờ duyệt và đã duyệt).', 'error'));
-      return false;
-    }
-    return true;
-  };
+  // // Kiểm tra giới hạn trước khi gửi
+  // const checkLimits = (quantity: number) => {
+  //   // Kiểm tra tổng số lượng cùng loại
+  //   if (totalSameDeviceBorrowed + quantity > 2) {
+  //     dispatch(setAlert('Bạn chỉ được mượn tối đa 2 thiết bị cùng loại (bao gồm cả đang chờ duyệt và đã duyệt).', 'error'));
+  //     return false;
+  //   }
+  //   // Kiểm tra tổng số lượng tất cả thiết bị
+  //   if (totalAllDeviceBorrowed + quantity > 3) {
+  //     dispatch(setAlert('Bạn chỉ được mượn tối đa 3 thiết bị (bao gồm cả đang chờ duyệt và đã duyệt).', 'error'));
+  //     return false;
+  //   }
+  //   return true;
+  // };
 
   const handleSubmit = async (values: any) => {
     try {
@@ -127,14 +127,12 @@ const BorrowForm: React.FC<BorrowFormProps> = ({ equipment, onSuccess }) => {
               {
                 type: 'number',
                 min: 1,
-                // max: equipment.availableQuantity,
                 message: `Số lượng tối đa là ${equipment.availableQuantity}`,
               },
             ]}
           >
             <InputNumber
               min={1}
-              // max={equipment.availableQuantity}
               style={{ width: '100%' }}
             />
           </Form.Item>

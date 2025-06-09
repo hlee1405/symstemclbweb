@@ -17,23 +17,38 @@ interface NotificationListProps {
 const NotificationList: React.FC<NotificationListProps> = ({ requests, readNotifications, onReadChange, onMarkAsRead, onMarkAllAsRead }) => {
   const [selectedNotification, setSelectedNotification] = useState<BorrowRequest | null>(null);
 
-  // Lọc các yêu cầu cần thông báo và sắp xếp mới nhất lên đầu
-  const notifications = requests.filter(req => {
+  // Tạo danh sách thông báo, luôn gửi cả hai nếu vừa được duyệt và sắp đến hạn
+  const notifications = requests.flatMap(req => {
     if (req.status === RequestStatus.APPROVED) {
       const isNewlyApproved = moment().diff(moment(req.approvedDate), 'hours') < 24;
       const isNearDue = moment(req.returnDate).diff(moment(), 'days') === 1;
       const isOverdue = moment().isAfter(moment(req.returnDate));
-      return isNewlyApproved || isNearDue || isOverdue;
+      const result = [];
+      if (isNewlyApproved) {
+        result.push({ ...req, notificationType: 'approval' });
+      }
+      if (isNearDue || isOverdue) {
+        result.push({ ...req, notificationType: 'return' });
+      }
+      return result;
     }
-    return false;
+    return [];
   }).sort((a, b) => {
-    // Ưu tiên sort theo approvedDate, nếu không có thì theo returnDate
+    // Ưu tiên thông báo duyệt trước nếu cùng request
+    if (a.id === b.id) {
+      if (a.notificationType === 'approval') return -1;
+      if (b.notificationType === 'approval') return 1;
+    }
+    // Nếu khác request, sắp xếp theo thời gian
     const dateA = a.approvedDate || a.returnDate;
     const dateB = b.approvedDate || b.returnDate;
     return moment(dateB).valueOf() - moment(dateA).valueOf();
   });
 
   const getNotificationIcon = (request: BorrowRequest) => {
+    if (request.notificationType === 'approval') {
+      return <CheckCircleIcon className="text-green-500" />;
+    }
     if (moment().isAfter(moment(request.returnDate))) {
       return <AlertTriangleIcon className="text-red-500" />;
     }
@@ -44,6 +59,9 @@ const NotificationList: React.FC<NotificationListProps> = ({ requests, readNotif
   };
 
   const getNotificationMessage = (request: BorrowRequest) => {
+    if (request.notificationType === 'approval') {
+      return `Yêu cầu mượn thiết bị "${request.equipmentName}" đã được duyệt`;
+    }
     if (moment().isAfter(moment(request.returnDate))) {
       return `Thiết bị "${request.equipmentName}" đã quá hạn trả`;
     }

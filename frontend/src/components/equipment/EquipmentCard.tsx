@@ -69,7 +69,7 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment, isAdmin = fals
               type="text" 
               icon={<CalendarIcon size={16} />}
               onClick={handleBorrow}
-              disabled={status === EquipmentStatus.OUT_OF_STOCK}
+              disabled={availableQuantity === 0}
             >
               Mượn
             </Button>
