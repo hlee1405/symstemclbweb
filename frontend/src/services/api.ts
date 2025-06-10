@@ -77,8 +77,12 @@ export const equipmentAPI = {
 
 // Yêu cầu API
 export const requestAPI = {
-  getAll: async () => {
-    const response = await api.get('/request/');
+  getAll: async (userId?: string) => {
+    let url = '/request/';
+    if (userId) {
+      url += `?userId=${encodeURIComponent(userId)}`;
+    }
+    const response = await api.get(url);
     return response.data;
   },
   getById: async (id: string) => {

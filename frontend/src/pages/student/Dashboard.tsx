@@ -26,17 +26,20 @@ const Dashboard: React.FC = () => {
     }
   }, [dispatch, user?.id]);
   
-  // Tính toán thống kê
-  const approvedRequests = requests.filter(req => 
+  // Chỉ lấy các request của user hiện tại
+  const userRequests = requests.filter(r => r.userId === user?.id);
+
+  // Tính toán thống kê chỉ cho user hiện tại
+  const approvedRequests = userRequests.filter(req => 
     req.status === RequestStatus.APPROVED
   ).length;
   
-  const pendingRequests = requests.filter(req => 
+  const pendingRequests = userRequests.filter(req => 
     req.status === RequestStatus.PENDING
   ).length;
   
   // Đếm tổng số thiết bị quá hạn thực tế
-  const allOverdueRequests = requests.filter(req => {
+  const allOverdueRequests = userRequests.filter(req => {
     if (req.status === RequestStatus.APPROVED) {
       const today = moment().startOf('day');
       const returnDate = moment(req.returnDate).startOf('day');
@@ -50,8 +53,8 @@ const Dashboard: React.FC = () => {
     .sort((a, b) => moment(b.returnDate).valueOf() - moment(a.returnDate).valueOf())
     .slice(0, 4);
   
-  // Nhận yêu cầu gần đây (5 yêu cầu gần đây nhất)
-  const recentRequests = [...requests]
+  // Nhận yêu cầu gần đây (5 yêu cầu gần đây nhất) chỉ của user hiện tại
+  const recentRequests = [...userRequests]
     .sort((a, b) => moment(b.requestDate).valueOf() - moment(a.requestDate).valueOf())
     .slice(0, 5);
   

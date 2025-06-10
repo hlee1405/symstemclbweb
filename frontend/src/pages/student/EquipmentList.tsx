@@ -73,7 +73,6 @@ const EquipmentList: React.FC = () => {
             >
               <Option value={EquipmentStatus.AVAILABLE}>Có sẵn</Option>
               <Option value={EquipmentStatus.OUT_OF_STOCK}>Hết hàng</Option>
-              <Option value={EquipmentStatus.MAINTENANCE}>Bảo trì</Option>
             </Select>
           </Col>
         </Row>

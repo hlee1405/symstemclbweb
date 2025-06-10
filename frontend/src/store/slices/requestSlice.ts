@@ -63,10 +63,10 @@ export const {
 } = requestSlice.actions;
 
 // Hành động không đồng bộ để lấy tất cả các yêu cầu
-export const fetchRequests = (): AppThunk => async (dispatch) => {
+export const fetchRequests = (userId?: string): AppThunk => async (dispatch) => {
   try {
     dispatch(fetchRequestsStart());
-    const requests = await requestAPI.getAll();
+    const requests = await requestAPI.getAll(userId);
     dispatch(fetchRequestsSuccess(requests));
   } catch (error) {
     dispatch(fetchRequestsFailure(error instanceof Error ? error.message : 'Đã xảy ra lỗi không xác định'));

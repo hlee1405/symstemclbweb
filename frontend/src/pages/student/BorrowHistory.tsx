@@ -18,13 +18,13 @@ const BorrowHistory: React.FC = () => {
   
   useEffect(() => {
     if (user?.id) {
-      dispatch(fetchRequests());
+      dispatch(fetchRequests(user.id));
     }
   }, [dispatch, user?.id]);
   
   const refreshData = () => {
     if (user?.id) {
-      dispatch(fetchRequests());
+      dispatch(fetchRequests(user.id));
     }
   };
   
@@ -47,7 +47,7 @@ const BorrowHistory: React.FC = () => {
   
   const handleMarkReturned = async (_id: string) => {
     if (user?.id) {
-      dispatch(fetchRequests());
+      dispatch(fetchRequests(user.id));
     }
   };
   

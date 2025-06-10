@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from database import db
 from schemas.request import RequestCreate, RequestOut
 import uuid
@@ -17,9 +17,12 @@ async def create_request(req: RequestCreate):
     return RequestOut(**doc)
 
 @router.get("/", response_model=list[RequestOut])
-async def list_requests():
+async def list_requests(userId: str = Query(None)):
     requests = []
-    async for r in db.requests.find():
+    query = {}
+    if userId:
+        query["userId"] = userId
+    async for r in db.requests.find(query):
         r["id"] = str(r.get("id", ""))
         r.pop("_id", None)
         requests.append(RequestOut(**r))

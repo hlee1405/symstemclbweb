@@ -31,21 +31,23 @@ const StudentLayout: React.FC<StudentLayoutProps> = ({ children }) => {
   const { requests } = useAppSelector((state) => state.request);
   const readIds = useAppSelector((state) => state.notificationRead.readIds);
   
+  // Chỉ lấy các request của user hiện tại
+  const userRequests = requests.filter(r => r.userId === user?.id);
+
   // Quản lý số lượng thông báo chưa đọc
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // Tính toán danh sách thông báo cần thiết
-  const notifications = requests.flatMap(req => {
+  // Tính toán danh sách thông báo cần thiết chỉ cho user hiện tại
+  const notifications = userRequests.flatMap(req => {
     if (req.status === RequestStatus.APPROVED) {
       const isNewlyApproved = moment().diff(moment(req.approvedDate), 'hours') < 24;
-      const isNearDue = moment(req.returnDate).diff(moment(), 'days') === 1;
-      const isOverdue = moment().isAfter(moment(req.returnDate));
+      const daysDiff = moment(req.returnDate).startOf('day').diff(moment().startOf('day'), 'days');
       const result = [];
       if (isNewlyApproved) {
-        result.push({ ...req, notificationType: 'approval' });
+        result.push({ ...req, notificationType: 'approval', id: req.id + '-approval' });
       }
-      if (isNearDue || isOverdue) {
-        result.push({ ...req, notificationType: 'return' });
+      if (daysDiff === 1 || daysDiff === 0 || daysDiff < 0) {
+        result.push({ ...req, notificationType: 'return', id: req.id + '-return' });
       }
       return result;
     }
@@ -126,7 +128,7 @@ const StudentLayout: React.FC<StudentLayoutProps> = ({ children }) => {
           <Popover
             content={
               <NotificationList
-                requests={requests}
+                requests={userRequests}
                 readNotifications={new Set(readIds)}
                 onReadChange={(newSet) => {
                   const newIds = Array.from(newSet).filter(id => !readIds.includes(id));
