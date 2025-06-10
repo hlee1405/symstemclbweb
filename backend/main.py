@@ -1,9 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from routes import auth, equipment, request, statistics, notification_read
 
 app = FastAPI()
+
+# Cấu hình CORS
+origins = [
+    "https://frontend-borrow.onrender.com",  # Đúng domain của frontend
+]
 
 # Cho phép frontend gọi API từ domain khác
 app.add_middleware(
