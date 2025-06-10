@@ -24,10 +24,10 @@ const NotificationList: React.FC<NotificationListProps> = ({ requests, readNotif
       const daysDiff = moment(req.returnDate).startOf('day').diff(moment().startOf('day'), 'days');
       const result = [];
       if (isNewlyApproved) {
-        result.push({ ...req, notificationType: 'approval' as const });
+        result.push({ ...req, notificationType: 'approval' as const, id: `${req.id}-approval` });
       }
       if (daysDiff === 1 || daysDiff === 0 || daysDiff < 0) {
-        result.push({ ...req, notificationType: 'return' as const });
+        result.push({ ...req, notificationType: 'return' as const, id: `${req.id}-return` });
       }
       return result;
     }
