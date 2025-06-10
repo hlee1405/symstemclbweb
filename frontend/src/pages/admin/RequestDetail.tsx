@@ -9,6 +9,7 @@ import { getEquipmentById } from '../../store/slices/equipmentSlice';
 import { RequestStatus } from '../../types';
 import { setAlert } from '../../store/slices/alertSlice';
 import StatusBadge from '../../components/common/StatusBadge';
+import moment from 'moment';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -39,7 +40,7 @@ const AdminRequestDetail: React.FC = () => {
   const loading = requestLoading || equipmentLoading;
   
   // Kiểm tra xem yêu cầu có quá hạn không
-  const isOverdue = selectedRequest && selectedRequest.status === RequestStatus.OVERDUE;
+  const isOverdue = selectedRequest && selectedRequest.status === RequestStatus.APPROVED && moment(selectedRequest.returnDate).startOf('day').isBefore(moment().startOf('day'));
   
   // Xác định bước hiện tại trong quy trình
   const getCurrentStep = () => {

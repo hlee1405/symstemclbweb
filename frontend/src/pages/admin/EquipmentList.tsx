@@ -55,7 +55,7 @@ const AdminEquipmentList: React.FC = () => {
       }
       // Nếu imageUrl rỗng thì gán giá trị mặc định
       if (!values.imageUrl) {
-        values.imageUrl = 'https://images.pexels.com/photos/2720447/pexels-photo-2720447.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1';
+        values.imageUrl = 'https://media.istockphoto.com/id/1077063744/vi/anh/m%C3%A1y-t%C3%ADnh-x%C3%A1ch-tay-%C4%91i%E1%BB%87n-tho%E1%BA%A1i-th%C3%B4ng-minh-m%C3%A1y-%E1%BA%A3nh-v%C3%A0-tai-nghe-%C4%91%C6%B0%E1%BB%A3c-c%C3%A1ch-ly-tr%C3%AAn-n%E1%BB%81n-tr%E1%BA%AFng.jpg?s=612x612&w=0&k=20&c=YpsrQL7BlRE40u9L-atuIOWkQYi6KS__-MSqi7Yw-JE=';
       }
       if (editingEquipment) {
         // Gọi API cập nhật thiết bị
@@ -225,14 +225,14 @@ const AdminEquipmentList: React.FC = () => {
             rules={[{ required: true, message: 'Vui lòng chọn danh mục' }]}
           >
             <Select>
-              <Option value="Computers">Máy tính</Option>
-              <Option value="Audio Visual">Âm thanh - Hình ảnh</Option>
-              <Option value="Photography">Nhiếp ảnh</Option>
-              <Option value="Tablets">Máy tính bảng</Option>
-              <Option value="Sports">Thể thao</Option>
-              <Option value="Music">Âm nhạc</Option>
-              <Option value="Lab Equipment">Thiết bị phòng thí nghiệm</Option>
-              <Option value="Other">Khác</Option>
+              <Option value="Máy tính">Máy tính</Option>
+              <Option value="Âm thanh - Hình ảnh">Âm thanh - Hình ảnh</Option>
+              <Option value="Nhiếp ảnh">Nhiếp ảnh</Option>
+              <Option value="Máy tính bảng">Máy tính bảng</Option>
+              <Option value="Thể thao">Thể thao</Option>
+              <Option value="Âm nhạc">Âm nhạc</Option>
+              <Option value="Thiết bị phòng thí nghiệm">Thiết bị phòng thí nghiệm</Option>
+              <Option value="Khác">Khác</Option>
             </Select>
           </Form.Item>
           
@@ -272,10 +272,10 @@ const AdminEquipmentList: React.FC = () => {
             rules={[{ required: true, message: 'Vui lòng chọn tình trạng' }]}
           >
             <Select>
-              <Option value="Excellent">Rất tốt</Option>
-              <Option value="Good">Tốt</Option>
-              <Option value="Fair">Khá</Option>
-              <Option value="Poor">Kém</Option>
+              <Option value="Rất tốt">Rất tốt</Option>
+              <Option value="Tốt">Tốt</Option>
+              <Option value="Khá">Khá</Option>
+              <Option value="Kém">Kém</Option>
             </Select>
           </Form.Item>
           

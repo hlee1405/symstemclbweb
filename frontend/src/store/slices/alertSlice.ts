@@ -20,12 +20,8 @@ const alertSlice = createSlice({
   name: 'alert',
   initialState,
   reducers: {
-    addAlert: (state, action: PayloadAction<Omit<Alert, 'id'>>) => {
-      const newAlert: Alert = {
-        id: uuidv4(),
-        ...action.payload,
-      };
-      state.alerts.push(newAlert);
+    addAlert: (state, action: PayloadAction<Alert>) => {
+      state.alerts.push(action.payload);
     },
     removeAlert: (state, action: PayloadAction<string>) => {
       state.alerts = state.alerts.filter(alert => alert.id !== action.payload);
@@ -42,7 +38,7 @@ export const setAlert = (
   timeout = 5000
 ): AppThunk => (dispatch) => {
   const id = uuidv4();
-  dispatch(addAlert({ message, type }));
+  dispatch(addAlert({ id, message, type }));
   
   setTimeout(() => {
     dispatch(removeAlert(id));

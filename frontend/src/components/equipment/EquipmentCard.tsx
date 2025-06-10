@@ -17,7 +17,7 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ equipment, isAdmin = fals
   const { id, name, description, imageUrl, availableQuantity, totalQuantity, status } = equipment;
 
   // Default image if none provided
-  const defaultImage = 'https://images.pexels.com/photos/2720447/pexels-photo-2720447.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1';
+  const defaultImage = 'https://media.istockphoto.com/id/1077063744/vi/anh/m%C3%A1y-t%C3%ADnh-x%C3%A1ch-tay-%C4%91i%E1%BB%87n-tho%E1%BA%A1i-th%C3%B4ng-minh-m%C3%A1y-%E1%BA%A3nh-v%C3%A0-tai-nghe-%C4%91%C6%B0%E1%BB%A3c-c%C3%A1ch-ly-tr%C3%AAn-n%E1%BB%81n-tr%E1%BA%AFng.jpg?s=612x612&w=0&k=20&c=YpsrQL7BlRE40u9L-atuIOWkQYi6KS__-MSqi7Yw-JE=';
   
   const handleViewDetails = () => {
     if (isAdmin) {

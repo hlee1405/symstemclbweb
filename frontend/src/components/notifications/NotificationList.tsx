@@ -15,19 +15,18 @@ interface NotificationListProps {
 }
 
 const NotificationList: React.FC<NotificationListProps> = ({ requests, readNotifications, onReadChange, onMarkAsRead, onMarkAllAsRead }) => {
-  const [selectedNotification, setSelectedNotification] = useState<BorrowRequest | null>(null);
+  const [selectedNotification, setSelectedNotification] = useState<any>(null);
 
   // Tạo danh sách thông báo, luôn gửi cả hai nếu vừa được duyệt và sắp đến hạn
   const notifications = requests.flatMap(req => {
     if (req.status === RequestStatus.APPROVED) {
       const isNewlyApproved = moment().diff(moment(req.approvedDate), 'hours') < 24;
-      const isNearDue = moment(req.returnDate).diff(moment(), 'days') === 1;
-      const isOverdue = moment().isAfter(moment(req.returnDate));
+      const daysDiff = moment(req.returnDate).startOf('day').diff(moment().startOf('day'), 'days');
       const result = [];
       if (isNewlyApproved) {
         result.push({ ...req, notificationType: 'approval' as const });
       }
-      if (isNearDue || isOverdue) {
+      if (daysDiff === 1 || daysDiff === 0 || daysDiff < 0) {
         result.push({ ...req, notificationType: 'return' as const });
       }
       return result;
@@ -45,122 +44,196 @@ const NotificationList: React.FC<NotificationListProps> = ({ requests, readNotif
     return moment(dateB).valueOf() - moment(dateA).valueOf();
   });
 
-  const getNotificationIcon = (request: BorrowRequest) => {
-    if (request.notificationType === 'approval') {
+  const getNotificationIcon = (notification: any) => {
+    if (notification.notificationType === 'approval') {
       return <CheckCircleIcon className="text-green-500" />;
     }
-    if (moment().isAfter(moment(request.returnDate))) {
-      return <AlertTriangleIcon className="text-red-500" />;
+    if (notification.notificationType === 'return') {
+      const daysDiff = moment(notification.returnDate).startOf('day').diff(moment().startOf('day'), 'days');
+      if (daysDiff < 0) {
+        return <AlertTriangleIcon className="text-red-500" />;
+      }
+      if (daysDiff === 0 || daysDiff === 1) {
+        return <ClockIcon className="text-yellow-500" />;
+      }
     }
-    if (moment(request.returnDate).diff(moment(), 'days') === 1) {
-      return <ClockIcon className="text-yellow-500" />;
-    }
-    return <CheckCircleIcon className="text-green-500" />;
+    // fallback: icon cảnh báo nhẹ hoặc null
+    return <ClockIcon className="text-yellow-500" />;
   };
 
-  const getNotificationMessage = (request: BorrowRequest) => {
-    if (request.notificationType === 'approval') {
-      return `Yêu cầu mượn thiết bị "${request.equipmentName}" đã được duyệt`;
+  const getNotificationMessage = (notification: any) => {
+    if (notification.notificationType === 'approval') {
+      return `Yêu cầu mượn thiết bị "${notification.equipmentName}" đã được duyệt`;
     }
-    if (moment().isAfter(moment(request.returnDate))) {
-      return `Thiết bị "${request.equipmentName}" đã quá hạn trả`;
+    if (notification.notificationType === 'return') {
+      const daysDiff = moment(notification.returnDate).startOf('day').diff(moment().startOf('day'), 'days');
+      if (daysDiff === 1) {
+        return `Thiết bị "${notification.equipmentName}" sắp đến hạn trả vào ngày mai`;
+      }
+      if (daysDiff === 0) {
+        return `Hôm nay là hạn trả thiết bị "${notification.equipmentName}"`;
+      }
+      if (daysDiff < 0) {
+        return `Thiết bị "${notification.equipmentName}" đã quá hạn trả`;
+      }
     }
-    if (moment(request.returnDate).diff(moment(), 'days') === 1) {
-      return `Thiết bị "${request.equipmentName}" sắp đến hạn trả vào ngày mai`;
-    }
-    return `Yêu cầu mượn thiết bị "${request.equipmentName}" đã được duyệt`;
+    return '';
   };
 
-  const getNotificationDetail = (request: BorrowRequest) => {
-    const detail = {
-      title: (
-        <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 0, textTransform: 'none', lineHeight: 1.3 }}>
-          {getNotificationMessage(request)}
-        </div>
-      ),
-      content: (
-        <>
-          <div style={{ fontSize: 16, color: '#222', lineHeight: 1.7 }}>
-            <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Thiết bị:</span> {request.equipmentName}</div>
-            <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Số lượng:</span> {request.quantity}</div>
-            <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn:</span> {moment(request.borrowDate).format('DD/MM/YYYY')}</div>
-            <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Hạn trả:</span> {moment(request.returnDate).format('DD/MM/YYYY')}</div>
-            {request.actualBorrowDate && (
-              <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn thực tế:</span> {moment(request.actualBorrowDate).format('DD/MM/YYYY')}</div>
-            )}
-            {request.actualReturnDate && (
-              <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày trả thực tế:</span> {moment(request.actualReturnDate).format('DD/MM/YYYY')}</div>
-            )}
-            {request.notes && (
-              <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ghi chú:</span> {request.notes}</div>
-            )}
+  const getNotificationDetail = (notification: any) => {
+    if (notification.notificationType === 'approval') {
+      return {
+        title: (
+          <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 0, textTransform: 'none', lineHeight: 1.3 }}>
+            {`Yêu cầu mượn thiết bị "${notification.equipmentName}" đã được duyệt`}
           </div>
-        </>
-      )
-    };
-
-if (moment().isAfter(moment(request.returnDate))) {
-  detail.content = (
-    <>
-      <div style={{ fontSize: 16, color: '#222', lineHeight: 1.7 }}>
-        <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Thiết bị:</span> {request.equipmentName}</div>
-        <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Số lượng:</span> {request.quantity}</div>
-        <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn:</span> {moment(request.borrowDate).format('DD/MM/YYYY')}</div>
-        <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Hạn trả:</span> {moment(request.returnDate).format('DD/MM/YYYY')}</div>
-        {request.actualBorrowDate && (
-          <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn thực tế:</span> {moment(request.actualBorrowDate).format('DD/MM/YYYY')}</div>
-        )}
-        {request.actualReturnDate && (
-          <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày trả thực tế:</span> {moment(request.actualReturnDate).format('DD/MM/YYYY')}</div>
-        )}
-        {request.notes && (
-          <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ghi chú:</span> {request.notes}</div>
-        )}
-        <div style={{ color: '#ff3b30', fontWeight: 600, marginTop: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-          <AlertTriangleIcon className="inline mr-1" />
-          Thiết bị đã quá hạn trả {moment().diff(moment(request.returnDate), 'days')} ngày
-        </div>
-        <div style={{ marginTop: 16, background: '#fffbe6', padding: 12, borderRadius: 6, border: '1px solid #ffe58f' }}>
-          <div style={{ fontWeight: 500, marginBottom: 4 }}>Kính gửi bạn,</div>
-          <div>
-            Thiết bị bạn đã mượn đã quá hạn trả. Vui lòng liên hệ với quản trị viên hoặc trả thiết bị sớm nhất có thể để tránh ảnh hưởng đến quyền lợi sử dụng thiết bị của các sinh viên khác.
-          </div>
-        </div>
-      </div>
-    </>
-  );
-} else if (moment(request.returnDate).diff(moment(), 'days') === 1) {
-      detail.content = (
-        <>
-          <div style={{ fontSize: 16, color: '#222', lineHeight: 1.7 }}>
-            <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Thiết bị:</span> {request.equipmentName}</div>
-            <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Số lượng:</span> {request.quantity}</div>
-            <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn:</span> {moment(request.borrowDate).format('DD/MM/YYYY')}</div>
-            <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Hạn trả:</span> {moment(request.returnDate).format('DD/MM/YYYY')}</div>
-            {request.actualBorrowDate && (
-              <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn thực tế:</span> {moment(request.actualBorrowDate).format('DD/MM/YYYY')}</div>
-            )}
-            {request.actualReturnDate && (
-              <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày trả thực tế:</span> {moment(request.actualReturnDate).format('DD/MM/YYYY')}</div>
-            )}
-            {request.notes && (
-              <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ghi chú:</span> {request.notes}</div>
-            )}
-            <div style={{ color: '#faad14', fontWeight: 600, marginTop: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <ClockIcon className="inline mr-1" />
-              Thiết bị sắp đến hạn trả
+        ),
+        content: (
+          <>
+            <div style={{ fontSize: 16, color: '#222', lineHeight: 1.7 }}>
+              <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Thiết bị:</span> {notification.equipmentName}</div>
+              <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Số lượng:</span> {notification.quantity}</div>
+              <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn:</span> {moment(notification.borrowDate).format('DD/MM/YYYY')}</div>
+              <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Hạn trả:</span> {moment(notification.returnDate).format('DD/MM/YYYY')}</div>
+              {notification.actualBorrowDate && (
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn thực tế:</span> {moment(notification.actualBorrowDate).format('DD/MM/YYYY')}</div>
+              )}
+              {notification.actualReturnDate && (
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày trả thực tế:</span> {moment(notification.actualReturnDate).format('DD/MM/YYYY')}</div>
+              )}
+              {notification.notes && (
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ghi chú:</span> {notification.notes}</div>
+              )}
             </div>
-            <div style={{ marginTop: 16, background: '#fffbe6', padding: 12, borderRadius: 6, border: '1px solid #ffe58f' }}>
-              <div>
-                Vui lòng trả thiết bị đúng hạn để tránh ảnh hưởng đến quyền lợi sử dụng thiết bị của các sinh viên khác.
+          </>
+        )
+      };
+    }
+    if (notification.notificationType === 'return') {
+      const daysDiff = moment(notification.returnDate).startOf('day').diff(moment().startOf('day'), 'days');
+      if (daysDiff < 0) {
+        // Quá hạn
+        return {
+          title: (
+            <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 0, textTransform: 'none', lineHeight: 1.3 }}>
+              {`Thiết bị "${notification.equipmentName}" đã quá hạn trả`}
+            </div>
+          ),
+          content: (
+            <>
+              <div style={{ fontSize: 16, color: '#222', lineHeight: 1.7 }}>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Thiết bị:</span> {notification.equipmentName}</div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Số lượng:</span> {notification.quantity}</div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn:</span> {moment(notification.borrowDate).format('DD/MM/YYYY')}</div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Hạn trả:</span> {moment(notification.returnDate).format('DD/MM/YYYY')}</div>
+                {notification.actualBorrowDate && (
+                  <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn thực tế:</span> {moment(notification.actualBorrowDate).format('DD/MM/YYYY')}</div>
+                )}
+                {notification.actualReturnDate && (
+                  <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày trả thực tế:</span> {moment(notification.actualReturnDate).format('DD/MM/YYYY')}</div>
+                )}
+                {notification.notes && (
+                  <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ghi chú:</span> {notification.notes}</div>
+                )}
+                <div style={{ color: '#ff3b30', fontWeight: 600, marginTop: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <AlertTriangleIcon className="inline mr-1" />
+                  Thiết bị đã quá hạn trả {Math.abs(daysDiff)} ngày
+                </div>
+                <div style={{ marginTop: 16, background: '#fffbe6', padding: 12, borderRadius: 6, border: '1px solid #ffe58f' }}>
+                  <div style={{ fontWeight: 500, marginBottom: 4 }}>Kính gửi bạn,</div>
+                  <div>
+                    Thiết bị bạn đã mượn đã quá hạn trả. Vui lòng liên hệ với quản trị viên hoặc trả thiết bị sớm nhất có thể để tránh ảnh hưởng đến quyền lợi sử dụng thiết bị của các sinh viên khác.
+                  </div>
+                </div>
               </div>
+            </>
+          )
+        };
+      }
+      if (daysDiff === 0) {
+        // Hôm nay là hạn trả
+        return {
+          title: (
+            <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 0, textTransform: 'none', lineHeight: 1.3 }}>
+              {`Hôm nay là hạn trả thiết bị "${notification.equipmentName}"`}
             </div>
-          </div>
-        </>
-      );
+          ),
+          content: (
+            <>
+              <div style={{ fontSize: 16, color: '#222', lineHeight: 1.7 }}>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Thiết bị:</span> {notification.equipmentName}</div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Số lượng:</span> {notification.quantity}</div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn:</span> {moment(notification.borrowDate).format('DD/MM/YYYY')}</div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Hạn trả:</span> {moment(notification.returnDate).format('DD/MM/YYYY')}</div>
+                {notification.actualBorrowDate && (
+                  <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn thực tế:</span> {moment(notification.actualBorrowDate).format('DD/MM/YYYY')}</div>
+                )}
+                {notification.actualReturnDate && (
+                  <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày trả thực tế:</span> {moment(notification.actualReturnDate).format('DD/MM/YYYY')}</div>
+                )}
+                {notification.notes && (
+                  <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ghi chú:</span> {notification.notes}</div>
+                )}
+                <div style={{ color: '#faad14', fontWeight: 600, marginTop: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <ClockIcon className="inline mr-1" />
+                  Hôm nay là hạn trả thiết bị, vui lòng trả đúng hạn
+                </div>
+                <div style={{ marginTop: 16, background: '#fffbe6', padding: 12, borderRadius: 6, border: '1px solid #ffe58f' }}>
+                  <div>
+                    Vui lòng trả thiết bị đúng hạn để tránh ảnh hưởng đến quyền lợi sử dụng thiết bị của các sinh viên khác.
+                  </div>
+                </div>
+              </div>
+            </>
+          )
+        };
+      }
+      if (daysDiff === 1) {
+        // Sắp đến hạn
+        return {
+          title: (
+            <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 0, textTransform: 'none', lineHeight: 1.3 }}>
+              {`Thiết bị "${notification.equipmentName}" sắp đến hạn trả vào ngày mai`}
+            </div>
+          ),
+          content: (
+            <>
+              <div style={{ fontSize: 16, color: '#222', lineHeight: 1.7 }}>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Thiết bị:</span> {notification.equipmentName}</div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Số lượng:</span> {notification.quantity}</div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn:</span> {moment(notification.borrowDate).format('DD/MM/YYYY')}</div>
+                <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Hạn trả:</span> {moment(notification.returnDate).format('DD/MM/YYYY')}</div>
+                {notification.actualBorrowDate && (
+                  <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày mượn thực tế:</span> {moment(notification.actualBorrowDate).format('DD/MM/YYYY')}</div>
+                )}
+                {notification.actualReturnDate && (
+                  <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ngày trả thực tế:</span> {moment(notification.actualReturnDate).format('DD/MM/YYYY')}</div>
+                )}
+                {notification.notes && (
+                  <div style={{ marginBottom: 4 }}><span style={{ fontWeight: 600 }}>Ghi chú:</span> {notification.notes}</div>
+                )}
+                <div style={{ color: '#faad14', fontWeight: 600, marginTop: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <ClockIcon className="inline mr-1" />
+                  Thiết bị sắp đến hạn trả
+                </div>
+                <div style={{ marginTop: 16, background: '#fffbe6', padding: 12, borderRadius: 6, border: '1px solid #ffe58f' }}>
+                  <div>
+                    Vui lòng trả thiết bị đúng hạn để tránh ảnh hưởng đến quyền lợi sử dụng thiết bị của các sinh viên khác.
+                  </div>
+                </div>
+              </div>
+            </>
+          )
+        };
+      }
+      // fallback: không trả về rỗng, có thể trả về thông báo chung hoặc null
+      return {
+        title: 'Thông báo',
+        content: 'Không có nội dung chi tiết cho thông báo này.'
+      };
     }
-
-    return detail;
+    // fallback
+    return { title: '', content: '' };
   };
 
   // Khi đọc/xem chi tiết thì cập nhật trạng thái đã đọc và callback lên trên
@@ -181,7 +254,7 @@ if (moment().isAfter(moment(request.returnDate))) {
     onMarkAllAsRead();
   };
 
-  const handleViewDetail = (notification: BorrowRequest) => {
+  const handleViewDetail = (notification: any) => {
     setSelectedNotification(notification);
     handleMarkAsRead(notification.id);
   };
@@ -251,11 +324,7 @@ if (moment().isAfter(moment(request.returnDate))) {
         </Button>
       </div>
       <Modal
-        title={
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#1f1f1f', paddingRight: 32 }}>
-            {selectedNotification ? getNotificationDetail(selectedNotification).title : ''}
-          </div>
-        }
+        title={selectedNotification ? getNotificationDetail(selectedNotification).title : ''}
         open={!!selectedNotification}
         onCancel={() => setSelectedNotification(null)}
         footer={

@@ -34,9 +34,9 @@ const RequestCard: React.FC<RequestCardProps> = ({
   // Kiểm tra xem yêu cầu có quá hạn không
   const isOverdue = () => {
     if (request.status === RequestStatus.APPROVED) {
-      const today = moment();
-      const returnDate = moment(request.returnDate);
-      return today.isAfter(returnDate);
+      const today = moment().startOf('day');
+      const returnDate = moment(request.returnDate).startOf('day');
+      return returnDate.isBefore(today);
     }
     return false;
   };

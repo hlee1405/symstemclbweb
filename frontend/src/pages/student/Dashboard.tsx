@@ -38,7 +38,9 @@ const Dashboard: React.FC = () => {
   // Đếm tổng số thiết bị quá hạn thực tế
   const allOverdueRequests = requests.filter(req => {
     if (req.status === RequestStatus.APPROVED) {
-      return moment().isAfter(moment(req.returnDate));
+      const today = moment().startOf('day');
+      const returnDate = moment(req.returnDate).startOf('day');
+      return returnDate.isBefore(today);
     }
     return false;
   });
@@ -121,9 +123,13 @@ const Dashboard: React.FC = () => {
                           description={`Yêu cầu vào ngày ${item.requestDate}`}
                         />
                         <StatusBadge 
-                          status={moment().isAfter(moment(item.returnDate)) && item.status === RequestStatus.APPROVED 
-                            ? RequestStatus.OVERDUE 
-                            : item.status} 
+                          status={(() => {
+                            const today = moment().startOf('day');
+                            const returnDate = moment(item.returnDate).startOf('day');
+                            return returnDate.isBefore(today) && item.status === RequestStatus.APPROVED 
+                              ? RequestStatus.OVERDUE 
+                              : item.status;
+                          })()} 
                           type="request" 
                         />
                       </List.Item>
