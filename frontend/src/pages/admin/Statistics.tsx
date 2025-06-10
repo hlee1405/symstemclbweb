@@ -144,6 +144,29 @@ const AdminStatistics: React.FC = () => {
   // Màu sắc cho biểu đồ
   const COLORS = ['#1890ff', '#52c41a', '#faad14', '#f5222d', '#722ed1', '#13c2c2', '#eb2f96', '#fa8c16', '#a0d911', '#52c41a'];
   
+  // Thêm hàm custom label chỉ hiện phần trăm ở giữa miếng bánh
+  const renderCustomizedLabel = ({
+    cx, cy, midAngle, innerRadius, outerRadius, percent
+  }: any) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="#fff"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize={14}
+        fontWeight={600}
+      >
+        {percent > 0 ? `${(percent * 100).toFixed(0)}%` : ''}
+      </text>
+    );
+  };
+  
   return (
     <AdminLayout>
       <div className="mb-6">
@@ -162,16 +185,7 @@ const AdminStatistics: React.FC = () => {
               onChange={(dates) => dates && setDateRange(dates as [Dayjs, Dayjs])}
               className="mb-4 md:mb-0"
             />
-            <Radio.Group 
-              value={chartType} 
-              onChange={e => setChartType(e.target.value)}
-              optionType="button"
-            >
-              <Radio.Button value="bar">Biểu đồ cột</Radio.Button>
-              <Radio.Button value="pie">Biểu đồ tròn</Radio.Button>
-            </Radio.Group>
           </div>
-          
           <Alert
             message="Tổng kết tháng hiện tại"
             description={
@@ -208,50 +222,30 @@ const AdminStatistics: React.FC = () => {
               <Empty description="Không có dữ liệu cho khoảng thời gian đã chọn" />
             ) : (
               <div style={{ height: 400 }}>
-                {chartType === 'bar' ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
                       data={equipmentStats}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={renderCustomizedLabel}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="count"
+                      nameKey="name"
                     >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        dataKey="name" 
-                        angle={-45} 
-                        textAnchor="end" 
-                        height={70}
-                      />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="count" name="Số lần mượn" fill="#1890ff" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={equipmentStats}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={true}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="count"
-                      >
-                        {equipmentStats.map((_, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        formatter={(value) => [value, 'Số lần mượn']}
-                        labelFormatter={(label) => equipmentStats.find(item => item.count === label)?.name || ''}
-                      />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                )}
+                      {equipmentStats.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      formatter={(value) => [value, 'Số lần mượn']}
+                      labelFormatter={(label) => equipmentStats.find(item => item.count === label)?.name || ''}
+                    />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
             )}
           </Card>
@@ -261,45 +255,30 @@ const AdminStatistics: React.FC = () => {
               <Empty description="Không có dữ liệu cho khoảng thời gian đã chọn" />
             ) : (
               <div style={{ height: 400 }}>
-                {chartType === 'bar' ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
                       data={categoryStats}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={renderCustomizedLabel}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="count"
+                      nameKey="name"
                     >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="count" name="Số lần mượn" fill="#52c41a" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={categoryStats}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={true}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="count"
-                      >
-                        {categoryStats.map((_, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        formatter={(value) => [value, 'Số lần mượn']}
-                        labelFormatter={(label) => categoryStats.find(item => item.count === label)?.name || ''}
-                      />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                )}
+                      {categoryStats.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      formatter={(value) => [value, 'Số lần mượn']}
+                      labelFormatter={(label) => categoryStats.find(item => item.count === label)?.name || ''}
+                    />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
             )}
           </Card>
