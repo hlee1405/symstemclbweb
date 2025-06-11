@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Card, Space, DatePicker, Spin, Empty, Alert, Radio } from 'antd';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Typography, Card, Space, DatePicker, Spin, Empty, Alert } from 'antd';
+import { Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import AdminLayout from '../../components/Layout/AdminLayout';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { fetchRequests } from '../../store/slices/requestSlice';
@@ -12,8 +12,6 @@ import moment from 'moment';
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 
-type ChartType = 'bar' | 'pie';
-
 const AdminStatistics: React.FC = () => {
   const dispatch = useAppDispatch();
   const { requests, loading: requestsLoading } = useAppSelector(state => state.request);
@@ -22,7 +20,6 @@ const AdminStatistics: React.FC = () => {
     dayjs().subtract(30, 'day'),
     dayjs()
   ]);
-  const [chartType, setChartType] = useState<ChartType>('bar');
   
   useEffect(() => {
     dispatch(fetchRequests());

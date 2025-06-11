@@ -103,12 +103,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 label: 'Yêu cầu mượn',
                 onClick: () => navigate('/admin/requests'),
               },
-              {
-                key: '/admin/statistics',
-                icon: <BarChart2Icon size={16} />,
-                label: 'Thống kê',
-                onClick: () => navigate('/admin/statistics'),
-              },
+              // {
+              //   key: '/admin/statistics',
+              //   icon: <BarChart2Icon size={16} />,
+              //   label: 'Thống kê mượn nhiều',
+              //   onClick: () => navigate('/admin/statistics'),
+              // },
             ]}
           />
         </Sider>
