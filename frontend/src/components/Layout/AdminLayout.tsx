@@ -24,10 +24,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
-  // const { requests } = useAppSelector((state) => state.request);
   
-  // Đếm số yêu cầu đang chờ cần quản trị viên phê duyệt
-  // const pendingRequests = requests.filter(req => req.status === 'pending').length;
   
   const handleLogout = () => {
     dispatch(logoutUser());

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Form, Input, Button, Typography, Divider, Alert } from 'antd';
+import { Card, Form, Input, Button, Typography, Alert } from 'antd';
 import { UserIcon, LockIcon, BoxIcon } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { loginAdmin } from '../../store/slices/authSlice';
@@ -26,12 +26,12 @@ const AdminLoginPage: React.FC = () => {
     }
   };
 
-  const handleAutoFill = () => {
-    form.setFieldsValue({
-      username: 'admin',
-      password: 'admin123',
-    });
-  };
+  // const handleAutoFill = () => {
+  //   form.setFieldsValue({
+  //     username: 'admin',
+  //     password: 'admin123',
+  //   });
+  // };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -79,13 +79,13 @@ const AdminLoginPage: React.FC = () => {
               placeholder="Mật khẩu"
             />
           </Form.Item>
-          <Form.Item className="mb-4">
+          {/* <Form.Item className="mb-4">
             <div className="flex items-center justify-between">
               <Button type="link" onClick={handleAutoFill} size="small">
                 Dùng tài khoản demo
               </Button>
             </div>
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item>
             <Button
               type="primary"
@@ -97,11 +97,11 @@ const AdminLoginPage: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
-        <Divider />
+        {/* <Divider />
         <div className="text-center text-sm text-gray-500">
           <p>Tài khoản demo:</p>
           <p>Quản trị: admin / admin123</p>
-        </div>
+        </div> */}
       </Card>
     </div>
   );
